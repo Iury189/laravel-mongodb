@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::create('hunters', function (Blueprint $collection) {
             $collection->string('nome_hunter');
             $collection->integer('idade_hunter');
-            $collection->float('altura_hunter');
-            $collection->float('peso_hunter');
-            $collection->foreignId('tipo_hunter_id');
-            $collection->foreignId('tipo_nen_id');
-            $collection->foreignId('tipo_sangue_id');
+            $collection->double('altura_hunter');
+            $collection->double('peso_hunter');
+            $collection->foreignId('tipo_hunter_id')->constrained('tipos_hunters');
+            $collection->foreignId('tipo_nen_id')->constrained('tipos_nens');
+            $collection->foreignId('tipo_sangue_id')->constrained('tipos_sanguineos');
             $collection->date('inicio');
             $collection->date('termino');
             $collection->timestamps();

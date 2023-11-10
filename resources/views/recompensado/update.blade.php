@@ -1,26 +1,31 @@
 @extends('templates.template_hunter')
-@section('title', "Atualizar recompensa")
+@section('title', "Atualizar recompensa de {{ $nome }}")
 @section('content')
     <div class="contained">
         <div class="row">
             <div class="col-md-12 mt-2">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Atualizar recompensa
-                            <a href="{{ url("reward") }}" class="btn btn-secondary float-end" title="Retornar listagem"><i class="fa fa-arrow-left"></i>&nbsp;Retornar listagem</a>
+                        <h4>Atualizar recompensa de {{ $recompensado->hunter->nome_hunter }}
+                            <a href="{{ url("rewarded") }}" class="btn btn-secondary float-end" title="Retornar listagem"><i class="fa fa-arrow-left"></i>&nbsp;Retornar listagem</a>
                         </h4>
                     </div>
                 </div>
                 <br>
                 <div class="card-body">
                     <!-- Form -->
-                    <form action="{{ url("update-reward/$recompensa->_id") }}" method="POST">
+                    <form action="{{ url("update-rewarded/$recompensado->_id") }}" method="POST">
                         {{ method_field('PATCH') }} {{ csrf_field() }}
                         <div class="form_group">
                             <div class="form_group">
-                                <div for="descricao_recompensa">Descrição:
-                                    <input type="text" class="form-control @error('descricao_recompensa') is-invalid @enderror" name="descricao_recompensa" placeholder="Digite a descrição da recompensa" maxlength="50" value="{{ $recompensa->descricao_recompensa }}">
-                                    @error('descricao_recompensa')
+                                <div for="recompensa_id">Recompensa:
+                                    <select class="form-control @error('recompensa_id') is-invalid @enderror" name="recompensa_id">
+                                        <option {{ $recompensado->recompensa_id == '' ? 'selected' : '' }} value="">{{ __('Escolha o Hunter') }}</option>
+                                        @foreach($recompensa as $r)
+                                            <option {{ $recompensado->recompensa_id == $r->_id ? 'selected' : '' }} value="{{ $r->_id }}">{{ $r->descricao_recompensa }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('recompensa_id')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
@@ -29,9 +34,28 @@
                             </div>
                             <br>
                             <div class="form_group">
-                                <div for="valor_recompensa">Valor:
-                                    <input type="text" class="form-control @error('valor_recompensa') is-invalid @enderror" name="valor_recompensa" placeholder="Digite o valor da recompensa" onkeypress="$(this).mask('0000000.00', {reverse: true});" value="{{ $recompensa->valor_recompensa }}">
-                                    @error('valor_recompensa')
+                                <div for="hunter_id">Hunter:
+                                    <select class="form-control @error('hunter_id') is-invalid @enderror" name="hunter_id">
+                                        <option {{ $recompensado->hunter_id == '' ? 'selected' : '' }} value="">{{ __('Escolha o Hunter') }}</option>
+                                        @foreach($hunter as $h)
+                                            <option {{ $recompensado->hunter_id == $h->_id ? 'selected' : '' }} value="{{ $h->_id }}">{{ $h->nome_hunter }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('hunter_id')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <br>
+                            <div class="form_group">
+                                <div for="concluida">Status:
+                                    <select class="form-control @error('concluida') is-invalid @enderror" name="concluida">
+                                        <option {{ $recompensado->concluida == '' ? 'selected' : '' }} value="{{ $recompensado->concluida }}">Escolha uma opção</option>
+                                        <option {{ $recompensado->concluida == true ? 'selected' : '' }} value="{{ $recompensado->concluida }}">Concluída</option>
+                                    </select>
+                                    @error('concluida')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>

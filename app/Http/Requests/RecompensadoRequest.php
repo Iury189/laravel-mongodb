@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RecompensaRequest extends FormRequest
+class RecompensadoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,12 +26,14 @@ class RecompensaRequest extends FormRequest
         return match ($this->method())
         {
             'POST' => [
-                'descricao_recompensa' => 'required',
-                'valor_recompensa' => 'required|numeric|min:0.00|max:1000000.00',
+                'recompensa_id' => 'required|exists:recompensas,_id',
+                'hunter_id' => 'required|exists:hunters,_id',
+                'concluida' => 'required|in:true',
             ],
             'PATCH' => [
-                'descricao_recompensa' => 'required',
-                'valor_recompensa' => 'required|numeric|min:0.00|max:1000000.00',
+                'recompensa_id' => 'required|exists:recompensas,_id',
+                'hunter_id' => 'required|exists:hunters,_id',
+                'concluida' => 'required|boolean',
             ],
         };
     }

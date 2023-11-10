@@ -1,5 +1,5 @@
 @extends('templates.template_hunter')
-@section('title', 'Trash Hunters')
+@section('title', 'Lixeira de Hunters')
 @section('content')
     <!-- Form -->
     <div class="contained">
@@ -7,12 +7,20 @@
             <div class="col-md-12 mt-2">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Trash Hunters
+                        <h4>Lixeira de Hunters
                         <a href="{{ url("/") }}" class="btn btn-secondary float-end" title="Voltar"><i class="fa fa-arrow-left"></i>&nbsp;Voltar</a>
                         </h4>
                     </div>
                 </div>
                 <div class="card-body">
+                    <form action="{{ url('search-hunter-trash') }}" method="GET" class="form-inline">
+                        <div class="input-group">
+                          <input type="text" name="search" class="form-control" placeholder="Filtrar por nome">
+                          <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-magnifying-glass"></i></i>&nbsp;Filtrar</button>
+                          </div>
+                        </div>
+                    </form>
                     <table class="table">
                         <thead>
                             <tr>
@@ -41,7 +49,7 @@
                                         <form action="{{ url("delete-register-hunter/".$hxh->_id) }}" method="POST">
                                             <a href="{{ url("restore-register-hunter/".$hxh->_id) }}" class="btn btn-primary" title="Restaurar {{ $hxh->nome_hunter }}"><i class="fa fa-arrows-rotate"></i>&nbsp;Restaurar</a>
                                             {{ ' ' }} {{ method_field('DELETE') }} {{ csrf_field() }}
-                                            <button type="submit" class="btn btn-danger" title="Deletar {{ $hxh->nome_hunter }}"><i class="fa fa-trash"></i>&nbsp;Deletar</button>
+                                            {{-- <button type="submit" class="btn btn-danger delete-button" title="Deletar {{ $hxh->nome_hunter }}"><i class="fa fa-trash"></i>&nbsp;Deletar</button> --}}
                                         </form>
                                     </td>
                                 </tr>
@@ -55,17 +63,18 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Obtenha o botão "Cadastrar"
-            const cadastrar_botao = document.querySelector('button[type="submit"]');
+            // Obtenha todos os botões de exclusão pela classe CSS
+            const deleteButtons = document.querySelectorAll('.delete-button');
 
-            // Adicione um evento de clique ao botão
-            cadastrar_botao.addEventListener('click', function(event) {
-                event.preventDefault(); // Impede o envio do formulário
-
-                confirmDelete('Excluir Hunter', 'Deseja excluir permanentemente este Hunter?'); // Modal de confirmação
+            // Adicione um evento de clique a cada botão de exclusão
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault(); // Impede o envio do formulário
+                    confirmDelete('Excluir Hunter', 'Deseja excluir permanentemente este Hunter?'); // Modal de confirmação
+                });
             });
 
-            function confirmDelete(title, text) {
+            function confirmDelete(title, text, id) {
                 Swal.fire({
                     title: title,
                     text: text,

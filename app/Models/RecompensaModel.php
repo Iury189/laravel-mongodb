@@ -13,14 +13,13 @@ class RecompensaModel extends Model
     protected $collection = 'recompensas';
     protected $primary_key = '_id';
     protected $fillable = [
-        'hunter_id',
         'descricao_recompensa',
         'valor_recompensa',
-        'concluida',
     ];
 
-    public function hunter()
+    public function recompensados()
     {
-        return $this->belongsTo(HunterModel::class, 'hunter_id');
+        return $this->hasMany(RecompensadosModel::class, 'recompensa_id');
     }
+
 }

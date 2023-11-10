@@ -9,7 +9,7 @@ class TipoNenModel extends Model
 {
     use HasFactory;
     protected $connection = 'mongodb';
-    protected $collection = "tipos_nen";
+    protected $collection = "tipos_nens";
     protected $primary_key = '_id';
     protected $fillable = [
         'descricao',

@@ -24,9 +24,9 @@ class HunterModel extends Model
         'termino',
     ];
 
-    public function recompensas()
+    public function recompensados()
     {
-        return $this->hasMany(RecompensaModel::class, 'hunter_id');
+        return $this->hasMany(RecompensadosModel::class, 'hunter_id');
     }
 
     public function tipos_hunter()

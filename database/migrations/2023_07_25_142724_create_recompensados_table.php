@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('recompensas', function (Blueprint $collection) {
-            $collection->string('descricao_recompensa');
-            $collection->double('valor_recompensa');
+        Schema::create('recompensados', function (Blueprint $collection) {
+            $collection->foreignId('recompensa_id')->constrained('recompensas');
+            $collection->foreignId('hunter_id')->constrained('hunters');
+            $collection->boolean('concluida')->default(false);
             $collection->timestamps();
             $collection->softDeletes();
         });
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('recompensas');
+        Schema::dropIfExists('recompensados');
     }
 };

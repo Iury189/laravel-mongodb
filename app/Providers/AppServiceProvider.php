@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('altura', function ($expression) {
-            return "<?php echo number_format($expression, 2, ',', '.') . ' m'; ?>";
+            return "<?php echo number_format($expression, 2, ',', '.') . ' cm'; ?>";
         });
     }
 }

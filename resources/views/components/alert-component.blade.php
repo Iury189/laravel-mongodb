@@ -1,20 +1,3 @@
-{{-- @if ($mensagem = Session::get('success_store'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <p>{{ $mensagem }}</p>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@elseif ($mensagem = Session::get('success_update'))
-    <div class="alert alert-primary alert-dismissible fade show" role="alert">
-        <p>{{ $mensagem }}</p>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@elseif ($mensagem = Session::get('success_destroy'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <p>{{ $mensagem }}</p>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-@endif --}}
-
 @if (session('success_store'))
     <script>
         Swal.fire({
@@ -31,7 +14,7 @@
         Swal.fire({
             title: 'Registro atualizado',
             text: '{{ session('success_update') }}',
-            icon: 'info',
+            icon: 'success',
             timer: 5000,
             showConfirmButton: false,
             allowOutsideClick: true
@@ -42,7 +25,7 @@
         Swal.fire({
             title: 'Registro enviado a lixeira',
             text: '{{ session('success_trash') }}',
-            icon: 'warning',
+            icon: 'success',
             timer: 5000,
             showConfirmButton: false,
             allowOutsideClick: true
@@ -53,7 +36,7 @@
         Swal.fire({
             title: 'Registro restaurado',
             text: '{{ session('success_restored') }}',
-            icon: 'question',
+            icon: 'success',
             timer: 5000,
             showConfirmButton: false,
             allowOutsideClick: true
@@ -64,7 +47,7 @@
         Swal.fire({
             title: 'Registro excluído',
             text: '{{ session('success_destroy') }}',
-            icon: 'error',
+            icon: 'success',
             timer: 5000,
             showConfirmButton: false,
             allowOutsideClick: true

@@ -28,8 +28,22 @@ class HunterController extends Controller
 
     public function store(HunterRequest $request) // Cria o registro
     {
-        HunterModel::create(array_map('trim', $request->validated()));
-        Log::channel('daily')->info("Hunter $request->nome_hunter está presente no sistema.");
+        $validacoes = $request->validated();
+
+        $dados_tratados = [
+            'nome_hunter' => trim((string) $validacoes['nome_hunter']),
+            'idade_hunter' => (int) $validacoes['idade_hunter'],
+            'altura_hunter' => (double) $validacoes['altura_hunter'],
+            'peso_hunter' => (double) $validacoes['peso_hunter'],
+            'tipo_hunter_id' => trim((string) $validacoes['tipo_hunter_id']),
+            'tipo_nen_id' => trim((string) $validacoes['tipo_nen_id']),
+            'tipo_sangue_id' => trim((string) $validacoes['tipo_sangue_id']),
+            'inicio' => $validacoes['inicio'],
+            'termino' => $validacoes['termino'],
+        ];
+
+        HunterModel::create($dados_tratados);
+        Log::channel('daily')->notice("Hunter $request->nome_hunter está presente no sistema.");
         return redirect('/')->with('success_store',"$request->nome_hunter está presente no sistema.");
     }
 
@@ -53,8 +67,22 @@ class HunterController extends Controller
 
     public function update(HunterRequest $request, $id) // Atualiza o registro
     {
-        HunterModel::where('_id', $id)->update(array_map('trim', $request->validated()));
-        Log::channel('daily')->debug("Hunter $request->nome_hunter obteve atualizações em suas informações.");
+        $validacoes = $request->validated();
+
+        $dados_tratados = [
+            'nome_hunter' => trim((string) $validacoes['nome_hunter']),
+            'idade_hunter' => (int) $validacoes['idade_hunter'],
+            'altura_hunter' => (double) $validacoes['altura_hunter'],
+            'peso_hunter' => (double) $validacoes['peso_hunter'],
+            'tipo_hunter_id' => trim((string) $validacoes['tipo_hunter_id']),
+            'tipo_nen_id' => trim((string) $validacoes['tipo_nen_id']),
+            'tipo_sangue_id' => trim((string) $validacoes['tipo_sangue_id']),
+            'inicio' => $validacoes['inicio'],
+            'termino' => $validacoes['termino'],
+        ];
+
+        HunterModel::where('_id', $id)->update($dados_tratados);
+        Log::channel('daily')->info("Hunter $request->nome_hunter obteve atualizações em suas informações.");
         return redirect('/')->with('success_update',"$request->nome_hunter obteve atualizações em suas informações.");
     }
 
@@ -62,8 +90,8 @@ class HunterController extends Controller
     {
         $nome_hunter = HunterModel::where('_id', '=', $id)->value('nome_hunter');
         HunterModel::where('_id', $id)->delete();
-        Log::channel('daily')->warning("Hunter $nome_hunter não está mais presente no sistema.");
-        return redirect('/')->with('success_trash',"$nome_hunter não está mais presente no sistema.");
+        Log::channel('daily')->warning("Hunter $nome_hunter foi movido para a lixeira.");
+        return redirect('/')->with('success_trash',"Hunter $nome_hunter foi movido para a lixeira.");
     }
 
     public function trashHunter() // Página de registros excluídos
@@ -95,5 +123,12 @@ class HunterController extends Controller
         $filtro = $request->input('search');
         $hunter = HunterModel::where('nome_hunter', 'regex', "/$filtro/i")->paginate(5);
         return view('hunter.index', compact('hunter'));
+    }
+
+    public function searchHunterTrash(Request $request) // Filtra registro na página de registros excluídos
+    {
+        $filtro = $request->input('search');
+        $hunter = HunterModel::onlyTrashed()->where('nome_hunter', 'regex', "/$filtro/i")->paginate(5);
+        return view('hunter.trash', compact('hunter'));
     }
 }

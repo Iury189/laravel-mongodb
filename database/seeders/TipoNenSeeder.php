@@ -15,7 +15,7 @@ class TipoNenSeeder extends Seeder
      */
     public function run()
     {
-        $collection = app('db')->getCollection('tipos_nen');
+        $collection = app('db')->getCollection('tipos_nens');
 
         $tipos_nens = [
             ['descricao' => 'Reforço'],
