@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('tipos_nens', function (Blueprint $table) {
             $table->string('descricao');
-            $table->timestamps();
         });
     }
 

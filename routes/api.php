@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TipoHunterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+/*
+|--------------------------------------------------------------------------
+| php artisan route:list
+|--------------------------------------------------------------------------
+*/
+// GET: localhost:8000/api/tipo-hunter
+// POST: localhost:8000/api/tipo-hunter
+// GET: localhost:8000/api/tipo-hunter/{_id}
+// PATCH: localhost:8000/api/tipo-hunter/{_id}
+// DELETE: localhost:8000/api/tipo-hunter/{_id}
+
+Route::apiResources([
+    'tipo-hunter' => TipoHunterController::class,
+]);
