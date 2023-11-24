@@ -32,7 +32,7 @@ class TipoHunterController extends Controller
         $tipo_hunter = TipoHunterModel::find($id);
 
         if (!$tipo_hunter) {
-            return response()->json(['message' => 'Recurso não encontrado'], 404);
+            return response()->json(['message' => 'Registro não encontrado para visualização.'], 404);
         }
 
         return response()->json($tipo_hunter, 200);
@@ -40,20 +40,32 @@ class TipoHunterController extends Controller
 
     public function update(TipoHunterRequest $request, $id)
     {
+        $tipo_hunter = TipoHunterModel::find($id);
+
+        if (!$tipo_hunter) {
+            return response()->json(['message' => 'Registro não encontrado para atualização.'], 404);
+        }
+
         $validacoes = $request->validated();
 
         $dados_tratados = [
             'descricao' => trim((string) $validacoes['descricao']),
         ];
 
-        $tipo_hunter = TipoHunterModel::where('_id', $id)->update($dados_tratados);
+        TipoHunterModel::where('_id', $id)->update($dados_tratados);
 
         return response()->json($tipo_hunter, 201);
     }
 
     public function destroy($id)
     {
+        $tipo_hunter = TipoHunterModel::find($id);
+
+        if (!$tipo_hunter) {
+            return response()->json(['message' => 'Registro não encontrado para exclusão.'], 404);
+        }
+
         TipoHunterModel::where('_id', $id)->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Registro excluído.'], 201);
     }
 }

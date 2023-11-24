@@ -19,7 +19,7 @@ class RecompensaModel extends Model
 
     public function recompensados()
     {
-        return $this->hasMany(RecompensadosModel::class, 'recompensa_id');
+        return $this->hasMany(RecompensadoModel::class, 'recompensa_id');
     }
 
 }
