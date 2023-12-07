@@ -20,7 +20,8 @@ class RecompensadoController extends Controller
     public function create()
     {
         $hunter = HunterModel::select('_id','nome_hunter')->get();
-        $recompensa = RecompensaModel::where('recompensados', [])->select('_id', 'descricao_recompensa')->get();
+        $recompensas_selecionadas = RecompensadoModel::pluck('recompensa_id')->all();
+        $recompensa = RecompensaModel::whereNotIn('_id', $recompensas_selecionadas)->select('_id', 'descricao_recompensa')->get();
         return view('recompensado.create', compact(['hunter','recompensa']));
     }
 
@@ -44,7 +45,8 @@ class RecompensadoController extends Controller
     {
         $recompensado = RecompensadoModel::find($id);
         $hunter = HunterModel::select('_id','nome_hunter')->get();
-        $recompensa = RecompensaModel::where('recompensados', [])->select('_id', 'descricao_recompensa')->get();
+        $recompensas_selecionadas = RecompensadoModel::pluck('recompensa_id')->all();
+        $recompensa = RecompensaModel::whereNotIn('_id', $recompensas_selecionadas)->select('_id', 'descricao_recompensa')->get();
         $nome = HunterModel::where('id', '=', $id)->value('nome_hunter');
         return view('recompensado.view', compact(['recompensado','recompensa','hunter','nome']));
     }
@@ -53,7 +55,8 @@ class RecompensadoController extends Controller
     {
         $recompensado = RecompensadoModel::find($id);
         $hunter = HunterModel::select('_id','nome_hunter')->get();
-        $recompensa = RecompensaModel::where('recompensados', [])->select('_id', 'descricao_recompensa')->get();
+        $recompensas_selecionadas = RecompensadoModel::pluck('recompensa_id')->all();
+        $recompensa = RecompensaModel::whereNotIn('_id', $recompensas_selecionadas)->select('_id', 'descricao_recompensa')->get();
         $nome = HunterModel::where('id', '=', $id)->value('nome_hunter');
         return view('recompensado.update', compact(['recompensado','recompensa','hunter','nome']));
     }
