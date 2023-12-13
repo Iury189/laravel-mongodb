@@ -20,7 +20,7 @@
                             <div class="form_group">
                                 <div for="recompensa_id">Recompensa:
                                     <select class="form-control @error('recompensa_id') is-invalid @enderror" name="recompensa_id">
-                                        <option {{ $recompensado->recompensa_id == '' ? 'selected' : '' }} value="">{{ __('Escolha o Hunter') }}</option>
+                                        <option {{ $recompensado->recompensa_id == '' ? 'selected' : '' }} value="">{{ __('Escolha a recompensa') }}</option>
                                         @foreach($recompensa as $r)
                                             <option {{ $recompensado->recompensa_id == $r->_id ? 'selected' : '' }} value="{{ $r->_id }}">{{ $r->descricao_recompensa }}</option>
                                         @endforeach
@@ -51,10 +51,8 @@
                             <br>
                             <div class="form_group">
                                 <div for="concluida">Status:
-                                    <select class="form-control @error('concluida') is-invalid @enderror" name="concluida">
-                                        <option {{ $recompensado->concluida == '' ? 'selected' : '' }} value="{{ $recompensado->concluida }}">Escolha uma opção</option>
-                                        <option {{ $recompensado->concluida == true ? 'selected' : '' }} value="{{ $recompensado->concluida }}">Concluída</option>
-                                    </select>
+                                    <input type="checkbox" class="@error('concluida') is-invalid @enderror" name="concluida" value="true" {{ $recompensado->concluida == true? 'checked' : '' }}>
+                                    Concluída
                                     @error('concluida')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

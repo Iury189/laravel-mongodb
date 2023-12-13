@@ -33,7 +33,7 @@ class RecompensadoRequest extends FormRequest
             'PATCH' => [
                 'recompensa_id' => 'required|exists:recompensas,_id',
                 'hunter_id' => 'required|exists:hunters,_id',
-                'concluida' => 'required|boolean',
+                'concluida' => 'required|in:true',
             ],
         };
     }

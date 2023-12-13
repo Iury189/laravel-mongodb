@@ -59,10 +59,8 @@
                             <br>
                             <div class="form_group">
                                 <div for="concluida">Status:
-                                    <select class="form-control @error('concluida') is-invalid @enderror" name="concluida">
-                                        <option {{ old('concluida') == '' ? 'selected' : '' }} value="">Escolha uma opção</option>
-                                        <option {{ old('concluida') == 'true' ? 'selected' : '' }} value="true">Concluída</option>
-                                    </select>
+                                    <input type="checkbox" class="@error('concluida') is-invalid @enderror" name="concluida" value="true" {{ old('concluida') == 'true' ? 'checked' : '' }}>
+                                    Concluída
                                     @error('concluida')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
