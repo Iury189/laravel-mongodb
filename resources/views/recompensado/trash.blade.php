@@ -12,6 +12,14 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <form action="{{ url('search-rewarded-trash') }}" method="GET" class="form-inline">
+                        <div class="input-group">
+                          <input type="text" name="search" class="form-control" placeholder="Filtrar por descrição da recompensa ou Hunter">
+                          <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-magnifying-glass"></i></i>&nbsp;Filtrar</button>
+                          </div>
+                        </div>
+                    </form>
                     <table class="table">
                         <thead>
                             <tr>

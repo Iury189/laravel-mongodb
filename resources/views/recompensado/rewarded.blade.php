@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h4>Listar Recompensados
-                            <a href="{{ url("trash-rewarded") }}" class="btn btn-danger float-center" title="Lixeira de recompensados"><i class="fa fa-dumpster"></i>&nbsp;Lixeira</a>
+                            <a href="{{ url("trash-rewarded") }}" class="btn btn-danger float-center" title="Lixeira de recompensados"><i class="fa fa-dumpster"></i>&nbsp;Lixeira de recompensados</a>
                             <a href="{{ url("/") }}" class="btn btn-info float-center" title="Hunters"><i class="fa fa-image-portrait"></i>&nbsp;Hunters</a>
                             <a href="{{ url("reward") }}" class="btn btn-dark float-center" title="Recompensas"><i class="fa fa-sack-dollar"></i>&nbsp;Recompensas</a>
                             <a href="{{ url("log-viewer") }}" class="btn btn-warning float-center" target="_blank" title="Registro de atividades"><i class="fa fa-circle-info"></i>&nbsp;Logs</a>
@@ -16,6 +16,14 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <form action="{{ url('search-rewarded') }}" method="GET" class="form-inline">
+                        <div class="input-group">
+                          <input type="text" name="search" class="form-control" placeholder="Filtrar por descrição da recompensa ou Hunter">
+                          <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-magnifying-glass"></i></i>&nbsp;Filtrar</button>
+                          </div>
+                        </div>
+                    </form>
                     <table class="table">
                         <thead>
                             <tr>

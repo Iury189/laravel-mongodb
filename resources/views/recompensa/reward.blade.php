@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header">
                         <h4>Listar recompensas
-                            <a href="{{ url("trash-reward") }}" class="btn btn-danger float-center" title="Lixeira de recompensas"><i class="fa fa-dumpster"></i>&nbsp;Lixeira</a>
+                            <a href="{{ url("trash-reward") }}" class="btn btn-danger float-center" title="Lixeira de recompensas"><i class="fa fa-dumpster"></i>&nbsp;Lixeira de recompensas</a>
                             <a href="{{ url("/") }}" class="btn btn-info float-center" title="Hunters"><i class="fa fa-image-portrait"></i>&nbsp;Hunters</a>
                             <a href="{{ url("rewarded") }}" class="btn btn-dark float-center" title="Recompensados"><i class="fa fa-hand-holding-dollar"></i>&nbsp;Recompensados</a>
                             <a href="{{ url("log-viewer") }}" class="btn btn-warning float-center" target="_blank" title="Registro de atividadess"><i class="fa fa-circle-info"></i>&nbsp;Logs</a>

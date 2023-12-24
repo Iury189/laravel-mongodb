@@ -57,6 +57,8 @@ Route::controller(RecompensadoController::class)->group(function() {
     Route::get('/update-rewarded/{_id}', 'edit')->name('edit');
     Route::get('/trash-rewarded', 'trashRewarded')->name('trashRewarded');
     Route::get('/restore-register-rewarded/{_id}', 'restoreRewardedTrash')->name('restoreRewardedTrash');
+    Route::get('/search-rewarded', 'searchRewarded')->name('searchRewarded');
+    Route::get('/search-rewarded-trash', 'searchRewardedTrash')->name('searchRewardedTrash');
     Route::post('/create-rewarded', 'store')->name('store');
     Route::patch('/update-rewarded/{_id}', 'update')->name('update');
     Route::delete('/delete-rewarded/{_id}', 'destroy')->name('destroy');

@@ -7,6 +7,7 @@ use App\Models\HunterModel;
 use App\Models\TipoHunterModel;
 use App\Models\TipoNenModel;
 use App\Models\TipoSanguineoModel;
+use App\Models\RecompensadoModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -113,6 +114,10 @@ class HunterController extends Controller
     {
         $nome = HunterModel::onlyTrashed()->find($id)->nome_hunter;
         $hunter = HunterModel::onlyTrashed()->find($id);
+        $quantidade_hunters = RecompensadoModel::where('hunter_id', $id)->count();
+        if ($quantidade_hunters > 0) {
+            dd("Não é possível excluir esse Hunter permanentemente, pois esse Hunter está associado em $quantidade_hunters registro(s) de recompensados.");
+        }
         $hunter->forceDelete();
         Log::channel('daily')->alert("Hunter $nome foi excluído(a) permanentemente do sistema.");
         return redirect('/')->with('success_destroy',"$nome foi excluído(a) permanentemente do sistema.");

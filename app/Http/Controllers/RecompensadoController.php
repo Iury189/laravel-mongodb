@@ -112,4 +112,103 @@ class RecompensadoController extends Controller
         return redirect('rewarded')->with('success_destroy',"Recompensado $nome foi excluído permanentemente do sistema.");
     }
 
+    public function searchRewarded(Request $request)
+    {
+        $filtro = $request->input('search');
+        $recompensado = RecompensaModel::raw(function ($collection) use ($filtro) {
+            return $collection->aggregate([
+                [
+                    '$lookup' => [
+                        'from' => 'hunters',
+                        'localField' => 'hunter_id',
+                        'foreignField' => '_id',
+                        'as' => 'hunter'
+                    ]
+                ],
+                ['$unwind' => '$hunter'],
+                [
+                    '$lookup' => [
+                        'from' => 'recompensas',
+                        'localField' => 'recompensa_id',
+                        'foreignField' => '_id',
+                        'as' => 'recompensa'
+                    ]
+                ],
+                ['$unwind' => '$recompensa'],
+                [
+                    '$match' => [
+                        '$or' => [
+                            ['hunter.nome_hunter' => ['$regex' => $filtro, '$options' => 'i']],
+                            ['recompensa.descricao_recompensa' => ['$regex' => $filtro, '$options' => 'i']]
+                        ]
+                    ]
+                ],
+                [
+                    '$project' => [
+                        '_id' => 1,
+                        'nome_hunter' => '$hunter.nome_hunter',
+                        'descricao_recompensa' => '$recompensa.descricao_recompensa',
+                        'valor_recompensa' => '$recompensa.valor_recompensa',
+                        'concluida' => 1,
+                    ]
+                ],
+                ['$limit' => 5]
+            ]);
+        });
+        dd($recompensado);
+        return view('recompensado.rewarded', compact('recompensado'));
+    }
+
+    public function searchRewardedTrash(Request $request)
+    {
+        $filtro = $request->input('search');
+        $recompensado = RecompensadoModel::raw(function ($collection) use ($filtro) {
+            return $collection->aggregate([
+                [
+                    '$lookup' => [
+                        'from' => 'hunters',
+                        'localField' => 'hunter_id',
+                        'foreignField' => '_id',
+                        'as' => 'hunter'
+                    ]
+                ],
+                ['$unwind' => '$hunter'],
+                [
+                    '$lookup' => [
+                        'from' => 'recompensas',
+                        'localField' => 'recompensa_id',
+                        'foreignField' => '_id',
+                        'as' => 'recompensa'
+                    ]
+                ],
+                [
+                    '$match' => [
+                        '$or' => [
+                            ['hunter.nome_hunter' => ['$regex' => $filtro, '$options' => 'i']],
+                            ['recompensa.descricao_recompensa' => ['$regex' => $filtro, '$options' => 'i']]
+                        ]
+                    ]
+                ],
+                [
+                    '$project' => [
+                        '_id' => 1,
+                        'nome_hunter' => '$hunter.nome_hunter',
+                        'descricao_recompensa' => '$recompensa.descricao_recompensa',
+                        'valor_recompensa' => '$recompensa.valor_recompensa',
+                        'concluida' => 1,
+                    ]
+                ],
+                [
+                    '$limit' => 5
+                ],
+                [
+                    '$match' => [
+                        'deleted_at' => ['$exists' => true]
+                    ]
+                ]
+            ]);
+        });
+        dd($recompensado);
+        return view('recompensado.trash', compact('recompensado'));
+    }
 }
