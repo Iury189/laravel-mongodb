@@ -3,11 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\HunterRequest;
-use App\Models\HunterModel;
-use App\Models\TipoHunterModel;
-use App\Models\TipoNenModel;
-use App\Models\TipoSanguineoModel;
-use App\Models\RecompensadoModel;
+use App\Models\{HunterModel,TipoHunterModel,TipoNenModel,TipoSanguineoModel,RecompensadoModel};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -30,7 +26,6 @@ class HunterController extends Controller
     public function store(HunterRequest $request) // Cria o registro
     {
         $validacoes = $request->validated();
-
         $dados_tratados = [
             'nome_hunter' => trim((string) $validacoes['nome_hunter']),
             'idade_hunter' => (int) $validacoes['idade_hunter'],
@@ -42,10 +37,9 @@ class HunterController extends Controller
             'inicio' => $validacoes['inicio'],
             'termino' => $validacoes['termino'],
         ];
-
         HunterModel::create($dados_tratados);
         Log::channel('daily')->notice("Hunter $request->nome_hunter está presente no sistema.");
-        return redirect('/')->with('success_store',"$request->nome_hunter está presente no sistema.");
+        return to_route('indexHunter')->with('success_store',"$request->nome_hunter está presente no sistema.");
     }
 
     public function show($id) // Apenas mostra o registro
@@ -69,7 +63,6 @@ class HunterController extends Controller
     public function update(HunterRequest $request, $id) // Atualiza o registro
     {
         $validacoes = $request->validated();
-
         $dados_tratados = [
             'nome_hunter' => trim((string) $validacoes['nome_hunter']),
             'idade_hunter' => (int) $validacoes['idade_hunter'],
@@ -81,10 +74,9 @@ class HunterController extends Controller
             'inicio' => $validacoes['inicio'],
             'termino' => $validacoes['termino'],
         ];
-
         HunterModel::where('_id', $id)->update($dados_tratados);
         Log::channel('daily')->info("Hunter $request->nome_hunter obteve atualizações em suas informações.");
-        return redirect('/')->with('success_update',"$request->nome_hunter obteve atualizações em suas informações.");
+        return to_route('indexHunter')->with('success_update',"$request->nome_hunter obteve atualizações em suas informações.");
     }
 
     public function destroy($id) // Exclui o registro
@@ -92,7 +84,7 @@ class HunterController extends Controller
         $nome_hunter = HunterModel::where('_id', '=', $id)->value('nome_hunter');
         HunterModel::where('_id', $id)->delete();
         Log::channel('daily')->warning("Hunter $nome_hunter foi movido para a lixeira.");
-        return redirect('/')->with('success_trash',"Hunter $nome_hunter foi movido para a lixeira.");
+        return to_route('indexHunter')->with('success_trash',"Hunter $nome_hunter foi movido para a lixeira.");
     }
 
     public function trashHunter() // Página de registros excluídos
@@ -107,7 +99,7 @@ class HunterController extends Controller
         $hunter = HunterModel::onlyTrashed()->find($id);
         $hunter->restore();
         Log::channel('daily')->notice("Hunter $nome retornou a listagem de Hunters.");
-        return redirect('/')->with('success_restored',"$nome retornou a listagem de Hunters.");
+        return to_route('trashHunter')->with('success_restored',"$nome retornou a listagem de Hunters.");
     }
 
     public function deleteHunterTrash($id) // Exclui registros da lixeira
@@ -120,7 +112,7 @@ class HunterController extends Controller
         }
         $hunter->forceDelete();
         Log::channel('daily')->alert("Hunter $nome foi excluído(a) permanentemente do sistema.");
-        return redirect('/')->with('success_destroy',"$nome foi excluído(a) permanentemente do sistema.");
+        return to_route('trashHunter')->with('success_destroy',"$nome foi excluído(a) permanentemente do sistema.");
     }
 
     public function searchHunter(Request $request) // Filtra registro na página principal
@@ -136,4 +128,5 @@ class HunterController extends Controller
         $hunter = HunterModel::onlyTrashed()->where('nome_hunter', 'regex', "/$filtro/i")->paginate(5);
         return view('hunter.trash', compact('hunter'));
     }
+
 }

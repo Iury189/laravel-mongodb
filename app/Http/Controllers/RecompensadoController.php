@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RecompensadoRequest;
-use App\Models\HunterModel;
-use App\Models\RecompensaModel;
-use App\Models\RecompensadoModel;
+use App\Models\{HunterModel,RecompensaModel,RecompensadoModel};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -29,16 +27,14 @@ class RecompensadoController extends Controller
     {
         $validacoes = $request->validated();
         $nome = HunterModel::where('_id', '=', $request->hunter_id)->value('nome_hunter');
-
         $dados_tratados = [
             'recompensa_id' => trim((string) $validacoes['recompensa_id']),
             'hunter_id' => trim((string) $validacoes['hunter_id']),
             'concluida' => (boolean) $validacoes['concluida'],
         ];
-
         RecompensadoModel::create($dados_tratados);
         Log::channel('daily')->notice("Recompensado $nome está presente no sistema.");
-        return redirect('rewarded')->with('success_store',"Recompensado $nome está presente no sistema.");
+        return to_route('indexRewarded')->with('success_store',"Recompensado $nome está presente no sistema.");
     }
 
     public function show($id)
@@ -65,16 +61,14 @@ class RecompensadoController extends Controller
     {
         $validacoes = $request->validated();
         $nome = HunterModel::where('_id', '=', $request->hunter_id)->value('nome_hunter');
-
         $dados_tratados = [
             'recompensa_id' => trim((string) $validacoes['recompensa_id']),
             'hunter_id' => trim((string) $validacoes['hunter_id']),
             'concluida' => (boolean) $validacoes['concluida'],
         ];
-
         RecompensadoModel::where('_id', $id)->update($dados_tratados);
         Log::channel('daily')->info("A recompensa de $nome obteve atualizações em suas informações.");
-        return redirect('rewarded')->with('success_update',"A recompensa de $nome obteve atualizações em suas informações.");
+        return to_route('indexRewarded')->with('success_update',"A recompensa de $nome obteve atualizações em suas informações.");
     }
 
     public function destroy($id)
@@ -83,7 +77,7 @@ class RecompensadoController extends Controller
         $nome = HunterModel::where('_id', '=', $id_recompensado)->value('nome_hunter');
         RecompensadoModel::where('_id', $id)->delete();
         Log::channel('daily')->warning("Recompensado $nome foi movido para a lixeira.");
-        return redirect('rewarded')->with('success_trash',"Recompensado $nome foi movido para a lixeira.");
+        return to_route('indexRewarded')->with('success_trash',"Recompensado $nome foi movido para a lixeira.");
     }
 
     public function trashRewarded()
@@ -99,7 +93,7 @@ class RecompensadoController extends Controller
         $recompensado = RecompensadoModel::onlyTrashed()->find($id);
         $recompensado->restore();
         Log::channel('daily')->notice("Recompensado $nome retornou a listagem de Hunters.");
-        return redirect('rewarded')->with('success_restored',"Recompensado $nome retornou a listagem de recompensas.");
+        return to_route('trashRewarded')->with('success_restored',"Recompensado $nome retornou a listagem de recompensas.");
     }
 
     public function deleteRewardedTrash($id)
@@ -109,13 +103,13 @@ class RecompensadoController extends Controller
         $recompensado = RecompensadoModel::onlyTrashed()->find($id);
         $recompensado->forceDelete();
         Log::channel('daily')->alert("Recompensado $nome foi excluído permanentemente do sistema.");
-        return redirect('rewarded')->with('success_destroy',"Recompensado $nome foi excluído permanentemente do sistema.");
+        return to_route('trashRewarded')->with('success_destroy',"Recompensado $nome foi excluído permanentemente do sistema.");
     }
 
     public function searchRewarded(Request $request)
     {
         $filtro = $request->input('search');
-        $recompensado = RecompensaModel::raw(function ($collection) use ($filtro) {
+        $recompensado = RecompensadoModel::raw(function($collection) use ($filtro) {
             return $collection->aggregate([
                 [
                     '$lookup' => [
@@ -145,11 +139,11 @@ class RecompensadoController extends Controller
                 ],
                 [
                     '$project' => [
-                        '_id' => 1,
+                        '_id' => '$_id',
                         'nome_hunter' => '$hunter.nome_hunter',
                         'descricao_recompensa' => '$recompensa.descricao_recompensa',
                         'valor_recompensa' => '$recompensa.valor_recompensa',
-                        'concluida' => 1,
+                        'concluida' => '$concluida',
                     ]
                 ],
                 ['$limit' => 5]
@@ -167,8 +161,8 @@ class RecompensadoController extends Controller
                 [
                     '$lookup' => [
                         'from' => 'hunters',
-                        'localField' => 'hunter_id',
-                        'foreignField' => '_id',
+                        'localField' => '_id',
+                        'foreignField' => 'hunter_id',
                         'as' => 'hunter'
                     ]
                 ],
@@ -176,8 +170,8 @@ class RecompensadoController extends Controller
                 [
                     '$lookup' => [
                         'from' => 'recompensas',
-                        'localField' => 'recompensa_id',
-                        'foreignField' => '_id',
+                        'localField' => '_id',
+                        'foreignField' => 'recompensa_id',
                         'as' => 'recompensa'
                     ]
                 ],
@@ -191,11 +185,11 @@ class RecompensadoController extends Controller
                 ],
                 [
                     '$project' => [
-                        '_id' => 1,
+                        '_id' => '_id',
                         'nome_hunter' => '$hunter.nome_hunter',
                         'descricao_recompensa' => '$recompensa.descricao_recompensa',
                         'valor_recompensa' => '$recompensa.valor_recompensa',
-                        'concluida' => 1,
+                        'concluida' => 'concluida',
                     ]
                 ],
                 [

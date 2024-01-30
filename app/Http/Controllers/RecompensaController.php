@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RecompensaRequest;
-use App\Models\HunterModel;
-use App\Models\RecompensaModel;
-use App\Models\RecompensadoModel;
+use App\Models\{HunterModel,RecompensaModel,RecompensadoModel};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -27,15 +25,13 @@ class RecompensaController extends Controller
     public function store(RecompensaRequest $request)
     {
         $validacoes = $request->validated();
-
         $dados_tratados = [
             'descricao_recompensa' => trim((string) $validacoes['descricao_recompensa']),
             'valor_recompensa' => (double) $validacoes['valor_recompensa'],
         ];
-
         RecompensaModel::create($dados_tratados);
         Log::channel('daily')->notice("Recompensa $request->descricao_recompensa está presente no sistema.");
-        return redirect('reward')->with('success_store',"Recompensa $request->descricao_recompensa está presente no sistema.");
+        return to_route('indexReward')->with('success_store',"Recompensa $request->descricao_recompensa está presente no sistema.");
     }
 
     public function show($id)
@@ -53,15 +49,13 @@ class RecompensaController extends Controller
     public function update(RecompensaRequest $request, $id)
     {
         $validacoes = $request->validated();
-
         $dados_tratados = [
             'descricao_recompensa' => trim((string) $validacoes['descricao_recompensa']),
             'valor_recompensa' => (double) $validacoes['valor_recompensa'],
         ];
-
         RecompensaModel::where('_id', $id)->update($dados_tratados);
         Log::channel('daily')->info("A recompensa $request->descricao_recompensa obteve atualizações em suas informações.");
-        return redirect('reward')->with('success_update',"A recompensa $request->descricao_recompensa obteve atualizações em suas informações.");
+        return to_route('indexReward')->with('success_update',"A recompensa $request->descricao_recompensa obteve atualizações em suas informações.");
     }
 
     public function destroy($id)
@@ -69,7 +63,7 @@ class RecompensaController extends Controller
         $descricao_recompensa = RecompensaModel::where('_id', '=', $id)->value('descricao_recompensa');
         RecompensaModel::where('_id', $id)->delete();
         Log::channel('daily')->warning("A recompensa $descricao_recompensa foi movida para a lixeira.");
-        return redirect('reward')->with('success_trash',"A recompensa $descricao_recompensa foi movida para a lixeira.");
+        return to_route('indexReward')->with('success_trash',"A recompensa $descricao_recompensa foi movida para a lixeira.");
     }
 
     public function trashReward()
@@ -84,7 +78,7 @@ class RecompensaController extends Controller
         $recompensa = RecompensaModel::onlyTrashed()->find($id);
         $recompensa->restore();
         Log::channel('daily')->notice("A recompensa $descricao_recompensa retornou a listagem de Hunters.");
-        return redirect('reward')->with('success_restored',"A recompensa $descricao_recompensa retornou a listagem de recompensas.");
+        return to_route('trashReward')->with('success_restored',"A recompensa $descricao_recompensa retornou a listagem de recompensas.");
     }
 
     public function deleteRewardTrash($id)
@@ -97,7 +91,7 @@ class RecompensaController extends Controller
         }
         $recompensa->forceDelete();
         Log::channel('daily')->alert("A recompensa $descricao_recompensa foi excluída permanentemente do sistema.");
-        return redirect('reward')->with('success_destroy',"A recompensa $descricao_recompensa foi excluída permanentemente do sistema.");
+        return to_route('trashReward')->with('success_destroy',"A recompensa $descricao_recompensa foi excluída permanentemente do sistema.");
     }
 
     public function searchReward(Request $request)
