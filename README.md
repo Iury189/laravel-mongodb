@@ -66,19 +66,19 @@ php artisan serve
 
 1 - Create a Laravel project with compatible version to MongoDB database. Please, verify if your version Laravel application is compatible [here](https://github.com/jenssegers/laravel-mongodb).
 ```
-composer create-project --prefer-dist laravel/laravel:^x.x name-project
+composer create-project laravel/laravel project-name
 ```
 
-2 - Install mongodb dependecy.
+2 - Install MongoDB dependecy.
 ```
-composer require jenssegers/mongodb
+composer require mongodb/laravel-mongodb
 ```
 
 3 - Add the following line in `config/app.php`.
 ```
 'providers' => [
     ...
-    Jenssegers\Mongodb\MongodbServiceProvider::class,
+    MongoDB\Laravel\MongoDBServiceProvider::class,
 ],
 ```
 

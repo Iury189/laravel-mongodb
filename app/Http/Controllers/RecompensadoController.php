@@ -132,8 +132,8 @@ class RecompensadoController extends Controller
                 [
                     '$match' => [
                         '$or' => [
-                            ['hunter.nome_hunter' => ['$regex' => $filtro, '$options' => 'i']],
-                            ['recompensa.descricao_recompensa' => ['$regex' => $filtro, '$options' => 'i']]
+                            ['hunter.nome_hunter' => ['$regex' => "/$filtro/i"]],
+                            ['recompensa.descricao_recompensa' => ['$regex' => "/$filtro/i"]]
                         ]
                     ]
                 ],
@@ -175,21 +175,22 @@ class RecompensadoController extends Controller
                         'as' => 'recompensa'
                     ]
                 ],
+                ['$unwind' => '$recompensa'],
                 [
                     '$match' => [
                         '$or' => [
-                            ['hunter.nome_hunter' => ['$regex' => $filtro, '$options' => 'i']],
-                            ['recompensa.descricao_recompensa' => ['$regex' => $filtro, '$options' => 'i']]
+                            ['hunter.nome_hunter' => ['$regex' => "/$filtro/i"]],
+                            ['recompensa.descricao_recompensa' => ['$regex' => "/$filtro/i"]]
                         ]
                     ]
                 ],
                 [
                     '$project' => [
-                        '_id' => '_id',
+                        '_id' => '$_id',
                         'nome_hunter' => '$hunter.nome_hunter',
                         'descricao_recompensa' => '$recompensa.descricao_recompensa',
                         'valor_recompensa' => '$recompensa.valor_recompensa',
-                        'concluida' => 'concluida',
+                        'concluida' => '$concluida',
                     ]
                 ],
                 [

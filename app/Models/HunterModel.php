@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Jenssegers\Mongodb\Eloquent\Model;
-use Jenssegers\Mongodb\Eloquent\SoftDeletes;
+use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\SoftDeletes;
 
 class HunterModel extends Model
 {
@@ -26,7 +26,7 @@ class HunterModel extends Model
 
     public function recompensados()
     {
-        return $this->hasMany(RecompensadosModel::class, 'hunter_id');
+        return $this->hasMany(RecompensadoModel::class, 'hunter_id');
     }
 
     public function tipos_hunter()
