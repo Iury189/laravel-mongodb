@@ -112,44 +112,48 @@ class RecompensadoController extends Controller
         $recompensado = RecompensadoModel::raw(function($collection) use ($filtro) {
             return $collection->aggregate([
                 [
+                    '$addFields' => [
+                        'recompensa_id' => ['$toObjectId' => '$recompensa_id'],
+                        'hunter_id' => ['$toObjectId' => '$hunter_id']
+                    ]
+                ],
+                [
                     '$lookup' => [
                         'from' => 'hunters',
                         'localField' => 'hunter_id',
                         'foreignField' => '_id',
-                        'as' => 'hunter'
+                        'as' => 'hunters'
                     ]
                 ],
-                ['$unwind' => '$hunter'],
                 [
                     '$lookup' => [
                         'from' => 'recompensas',
                         'localField' => 'recompensa_id',
                         'foreignField' => '_id',
-                        'as' => 'recompensa'
+                        'as' => 'recompensas'
                     ]
                 ],
-                ['$unwind' => '$recompensa'],
                 [
                     '$match' => [
                         '$or' => [
-                            ['hunter.nome_hunter' => ['$regex' => "/$filtro/i"]],
-                            ['recompensa.descricao_recompensa' => ['$regex' => "/$filtro/i"]]
+                            ['recompensas.descricao_recompensa' => ['$regex' => $filtro, '$options' => 'i']],
+                            ['hunters.nome_hunter' => ['$regex' => $filtro, '$options' => 'i']]
                         ]
                     ]
                 ],
                 [
                     '$project' => [
-                        '_id' => '$_id',
-                        'nome_hunter' => '$hunter.nome_hunter',
-                        'descricao_recompensa' => '$recompensa.descricao_recompensa',
-                        'valor_recompensa' => '$recompensa.valor_recompensa',
-                        'concluida' => '$concluida',
+                        '_id' => 1,
+                        'hunter_id' => 1,
+                        'recompensa_id' => 1,
+                        'concluida' => 1,
                     ]
                 ],
-                ['$limit' => 5]
+                [
+                    '$limit' => 5
+                ],
             ]);
         });
-        dd($recompensado);
         return view('recompensado.rewarded', compact('recompensado'));
     }
 
@@ -159,51 +163,50 @@ class RecompensadoController extends Controller
         $recompensado = RecompensadoModel::raw(function ($collection) use ($filtro) {
             return $collection->aggregate([
                 [
-                    '$lookup' => [
-                        'from' => 'hunters',
-                        'localField' => '_id',
-                        'foreignField' => 'hunter_id',
-                        'as' => 'hunter'
+                    '$addFields' => [
+                        'recompensa_id' => ['$toObjectId' => '$recompensa_id'],
+                        'hunter_id' => ['$toObjectId' => '$hunter_id']
                     ]
                 ],
-                ['$unwind' => '$hunter'],
+                [
+                    '$lookup' => [
+                        'from' => 'hunters',
+                        'localField' => 'hunter_id',
+                        'foreignField' => '_id',
+                        'as' => 'hunters'
+                    ]
+                ],
                 [
                     '$lookup' => [
                         'from' => 'recompensas',
-                        'localField' => '_id',
-                        'foreignField' => 'recompensa_id',
-                        'as' => 'recompensa'
+                        'localField' => 'recompensa_id',
+                        'foreignField' => '_id',
+                        'as' => 'recompensas'
                     ]
                 ],
-                ['$unwind' => '$recompensa'],
                 [
                     '$match' => [
                         '$or' => [
-                            ['hunter.nome_hunter' => ['$regex' => "/$filtro/i"]],
-                            ['recompensa.descricao_recompensa' => ['$regex' => "/$filtro/i"]]
-                        ]
+                            ['recompensas.descricao_recompensa' => ['$regex' => $filtro, '$options' => 'i']],
+                            ['hunters.nome_hunter' => ['$regex' => $filtro, '$options' => 'i']]
+                        ],
+                        'deleted_at' => ['$exists' => true]
                     ]
                 ],
                 [
                     '$project' => [
-                        '_id' => '$_id',
-                        'nome_hunter' => '$hunter.nome_hunter',
-                        'descricao_recompensa' => '$recompensa.descricao_recompensa',
-                        'valor_recompensa' => '$recompensa.valor_recompensa',
-                        'concluida' => '$concluida',
+                        '_id' => 1,
+                        'descricao_recompensa' => '$recompensas.descricao_recompensa',
+                        'valor_recompensa' => '$recompensas.valor_recompensa',
+                        'nome_hunter' => '$hunters.nome_hunter',
+                        'concluida' => 1,
                     ]
                 ],
                 [
                     '$limit' => 5
                 ],
-                [
-                    '$match' => [
-                        'deleted_at' => ['$exists' => true]
-                    ]
-                ]
             ]);
         });
-        dd($recompensado);
         return view('recompensado.trash', compact('recompensado'));
     }
 }

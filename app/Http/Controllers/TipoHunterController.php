@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TipoHunterRequest;
 use App\Models\TipoHunterModel;
+use Illuminate\Validation\ValidationException;
+use App\Http\Requests\TipoHunterRequest;
 use Illuminate\Http\Request;
 
 class TipoHunterController extends Controller
@@ -14,17 +15,18 @@ class TipoHunterController extends Controller
         return response()->json($tipos_hunter, 200);
     }
 
-    public function store(TipoHunterRequest $request)
+    public function store(Request $request)
     {
         try {
-            $validacoes = $request->validated();
-            $dados_tratados = [
-                'descricao' => (string) $validacoes['descricao'],
-            ];
-            $tipo_hunter = TipoHunterModel::create($dados_tratados);
+            $validacoes = $request->validate([
+                'descricao' => 'required|max:30',
+            ]);
+            $tipo_hunter = TipoHunterModel::create($validacoes);
             return response()->json($tipo_hunter, 201);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Verifique se você inseriu corretamente os campos conforme as validações.'], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -37,21 +39,23 @@ class TipoHunterController extends Controller
         return response()->json($tipo_hunter, 200);
     }
 
-    public function update(TipoHunterRequest $request, $id)
+    public function update(Request $request, $id)
     {
         try {
             $tipo_hunter = TipoHunterModel::find($id);
             if (!$tipo_hunter) {
                 return response()->json(['message' => 'Registro não encontrado para atualização.'], 404);
             }
-            $validacoes = $request->validated();
-            $dados_tratados = [
-                'descricao' => trim((string) $validacoes['descricao']),
-            ];
-            TipoHunterModel::where('_id', $id)->update($dados_tratados);
-            return response()->json($tipo_hunter, 200);
+            $validacoes = $request->validate([
+                'descricao' => 'required|max:30',
+            ]);
+            TipoHunterModel::where('_id', $id)->update($validacoes);
+            $registro_atualizado = $tipo_hunter->find($id);
+            return response()->json($registro_atualizado, 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->errors()], 422);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Verifique se você inseriu corretamente os campos conforme as validações.'], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
