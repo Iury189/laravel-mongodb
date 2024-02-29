@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\TipoHunterModel;
 use Illuminate\Validation\ValidationException;
-use App\Http\Requests\TipoHunterRequest;
 use Illuminate\Http\Request;
 
 class TipoHunterController extends Controller
@@ -21,7 +20,10 @@ class TipoHunterController extends Controller
             $validacoes = $request->validate([
                 'descricao' => 'required|max:30',
             ]);
-            $tipo_hunter = TipoHunterModel::create($validacoes);
+            $dados_tratados = [
+                'descricao' => trim((string) $validacoes['descricao']),
+            ];
+            $tipo_hunter = TipoHunterModel::create($dados_tratados);
             return response()->json($tipo_hunter, 201);
         } catch (ValidationException $e) {
             return response()->json(['message' => $e->errors()], 422);
@@ -49,7 +51,10 @@ class TipoHunterController extends Controller
             $validacoes = $request->validate([
                 'descricao' => 'required|max:30',
             ]);
-            TipoHunterModel::where('_id', $id)->update($validacoes);
+            $dados_tratados = [
+                'descricao' => trim((string) $validacoes['descricao']),
+            ];
+            TipoHunterModel::where('_id', $id)->update($dados_tratados);
             $registro_atualizado = $tipo_hunter->find($id);
             return response()->json($registro_atualizado, 200);
         } catch (ValidationException $e) {
