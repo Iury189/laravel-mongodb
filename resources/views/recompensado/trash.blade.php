@@ -33,13 +33,13 @@
                         <tbody>
                             @foreach($recompensado as $r)
                                 <tr>
-                                    <td>{{ $r->recompensa->descricao_recompensa }}</td>
-                                    <td>@dinheiro($r->recompensa->valor_recompensa)</td>
-                                    <td>{{ $r->hunter->nome_hunter }}</td>
-                                    <td> {{ $r->concluida == true ? 'Concluída' : 'Não concluída' }} </td>
+                                    <td>{{ $r['descricao_recompensa'] }}</td>
+                                    <td>@dinheiro($r['valor_recompensa'])</td>
+                                    <td>{{ $r['nome_hunter'] }}</td>
+                                    <td>{{ $r['concluida'] == true ? 'Concluída' : 'Não concluída' }}</td>
                                     <td>
-                                        <form action="{{ url("delete-register-rewarded/".$r->_id) }}" method="POST">
-                                            <a href="{{ url("restore-register-rewarded/".$r->_id) }}" class="btn btn-primary"><i class="fa fa-arrows-rotate"></i>&nbsp;Restaurar</a>
+                                        <form action="{{ url("delete-register-rewarded/{$r['_id']}") }}" method="POST">
+                                            <a href="{{ url("restore-register-rewarded/{$r['_id']}") }}" class="btn btn-primary"><i class="fa fa-arrows-rotate"></i>&nbsp;Restaurar</a>
                                             {{ ' ' }} {{ method_field('DELETE') }} {{ csrf_field() }}
                                             {{-- <button type="submit" class="btn btn-danger delete-button"><i class="fa fa-trash"></i>&nbsp;Deletar</button> --}}
                                         </form>

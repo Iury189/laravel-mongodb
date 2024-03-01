@@ -37,14 +37,14 @@
                         <tbody>
                             @foreach($recompensado as $r)
                                 <tr>
-                                    <td>{{ $r->recompensa->descricao_recompensa }}</td>
-                                    <td>@dinheiro($r->recompensa->valor_recompensa)</td>
-                                    <td>{{ $r->hunter->nome_hunter }}</td>
-                                    <td> {{ $r->concluida == true ? 'Concluída' : 'Não concluída' }} </td>
+                                    <td>{{ $r['descricao_recompensa'] }}</td>
+                                    <td>@dinheiro($r['valor_recompensa'])</td>
+                                    <td>{{ $r['nome_hunter'] }}</td>
+                                    <td>{{ $r['concluida'] == true ? 'Concluída' : 'Não concluída' }}</td>
                                     <td>
-                                        <form action="{{ url("delete-rewarded/$r->_id") }}" method="POST">
-                                            <a href="{{ url("view-rewarded/$r->_id") }}" class="btn btn-dark"><i class="fa fa-eye"></i>&nbsp;Visualizar</a>
-                                            {{-- <a href="{{ url("update-rewarded/$r->_id") }}" class="btn btn-primary" ><i class="fa fa-arrows-rotate"></i>&nbsp;Atualizar</a> --}}
+                                        <form action="{{ url("delete-rewarded/{$r['_id']}") }}" method="POST">
+                                            <a href="{{ url("view-rewarded/{$r['_id']}") }}" class="btn btn-dark"><i class="fa fa-eye"></i>&nbsp;Visualizar</a>
+                                            {{-- <a href="{{ url("update-rewarded/{$r['_id']}") }}" class="btn btn-primary" ><i class="fa fa-arrows-rotate"></i>&nbsp;Atualizar</a> --}}
                                             {{ ' ' }} {{ method_field('DELETE') }} {{ csrf_field() }}
                                             <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i>&nbsp;Deletar</button>
                                         </form>

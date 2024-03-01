@@ -6,12 +6,71 @@ use App\Http\Requests\RecompensadoRequest;
 use App\Models\{HunterModel,RecompensaModel,RecompensadoModel};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Pagination\Paginator;
 
 class RecompensadoController extends Controller
 {
     public function index()
     {
-        $recompensado = RecompensadoModel::paginate(5);
+        $query = RecompensadoModel::raw(function($collection) {
+            return $collection->aggregate([
+                [
+                    '$addFields' => [
+                        'recompensa_id' => ['$toObjectId' => '$recompensa_id'],
+                        'hunter_id' => ['$toObjectId' => '$hunter_id']
+                    ]
+                ],
+                [
+                    '$lookup' => [
+                        'from' => 'hunters',
+                        'localField' => 'hunter_id',
+                        'foreignField' => '_id',
+                        'as' => 'hunters'
+                    ]
+                ],
+                [
+                    '$unwind' => '$hunters'
+                ],
+                [
+                    '$lookup' => [
+                        'from' => 'recompensas',
+                        'localField' => 'recompensa_id',
+                        'foreignField' => '_id',
+                        'as' => 'recompensas'
+                    ]
+                ],
+                [
+                    '$unwind' => '$recompensas'
+                ],
+                [
+                    '$match' => [
+                        'deleted_at' => null
+                    ]
+                ],
+                [
+                    '$project' => [
+                        '_id' => 1,
+                        'descricao_recompensa' => '$recompensas.descricao_recompensa',
+                        'valor_recompensa' => '$recompensas.valor_recompensa',
+                        'nome_hunter' => '$hunters.nome_hunter',
+                        'concluida' => 1,
+                    ]
+                ],
+            ]);
+        });
+        $page = Paginator::resolveCurrentPage() ?: 1;
+        $registros_pagina = 5;
+        $items = $query->skip(($page - 1) * $registros_pagina)->take($registros_pagina)->toArray();
+        $recompensado = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $query->count(),
+            $registros_pagina,
+            $page,
+            [
+                'path' => Paginator::resolveCurrentPath(),
+                'pageName' => 'page',
+            ]
+        );
         return view('recompensado.rewarded', compact(['recompensado']));
     }
 
@@ -82,7 +141,65 @@ class RecompensadoController extends Controller
 
     public function trashRewarded()
     {
-        $recompensado = RecompensadoModel::onlyTrashed()->paginate(5);
+        $query = RecompensadoModel::raw(function($collection) {
+            return $collection->aggregate([
+                [
+                    '$addFields' => [
+                        'recompensa_id' => ['$toObjectId' => '$recompensa_id'],
+                        'hunter_id' => ['$toObjectId' => '$hunter_id']
+                    ]
+                ],
+                [
+                    '$lookup' => [
+                        'from' => 'hunters',
+                        'localField' => 'hunter_id',
+                        'foreignField' => '_id',
+                        'as' => 'hunters'
+                    ]
+                ],
+                [
+                    '$unwind' => '$hunters'
+                ],
+                [
+                    '$lookup' => [
+                        'from' => 'recompensas',
+                        'localField' => 'recompensa_id',
+                        'foreignField' => '_id',
+                        'as' => 'recompensas'
+                    ]
+                ],
+                [
+                    '$unwind' => '$recompensas'
+                ],
+                [
+                    '$match' => [
+                        'deleted_at' => ['$exists' => true, '$ne' => null]
+                    ]
+                ],
+                [
+                    '$project' => [
+                        '_id' => 1,
+                        'descricao_recompensa' => '$recompensas.descricao_recompensa',
+                        'valor_recompensa' => '$recompensas.valor_recompensa',
+                        'nome_hunter' => '$hunters.nome_hunter',
+                        'concluida' => 1,
+                    ]
+                ],
+            ]);
+        });
+        $page = Paginator::resolveCurrentPage() ?: 1;
+        $registros_pagina = 5;
+        $items = $query->skip(($page - 1) * $registros_pagina)->take($registros_pagina)->toArray();
+        $recompensado = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $query->count(),
+            $registros_pagina,
+            $page,
+            [
+                'path' => Paginator::resolveCurrentPath(),
+                'pageName' => 'page',
+            ]
+        );
         return view('recompensado.trash', compact('recompensado'));
     }
 
@@ -109,7 +226,7 @@ class RecompensadoController extends Controller
     public function searchRewarded(Request $request)
     {
         $filtro = $request->input('search');
-        $recompensado = RecompensadoModel::raw(function($collection) use ($filtro) {
+        $query = RecompensadoModel::raw(function($collection) use ($filtro) {
             return $collection->aggregate([
                 [
                     '$addFields' => [
@@ -126,12 +243,18 @@ class RecompensadoController extends Controller
                     ]
                 ],
                 [
+                    '$unwind' => '$hunters'
+                ],
+                [
                     '$lookup' => [
                         'from' => 'recompensas',
                         'localField' => 'recompensa_id',
                         'foreignField' => '_id',
                         'as' => 'recompensas'
                     ]
+                ],
+                [
+                    '$unwind' => '$recompensas'
                 ],
                 [
                     '$match' => [
@@ -144,8 +267,9 @@ class RecompensadoController extends Controller
                 [
                     '$project' => [
                         '_id' => 1,
-                        'hunter_id' => 1,
-                        'recompensa_id' => 1,
+                        'descricao_recompensa' => '$recompensas.descricao_recompensa',
+                        'valor_recompensa' => '$recompensas.valor_recompensa',
+                        'nome_hunter' => '$hunters.nome_hunter',
                         'concluida' => 1,
                     ]
                 ],
@@ -154,13 +278,26 @@ class RecompensadoController extends Controller
                 ],
             ]);
         });
+        $page = Paginator::resolveCurrentPage() ?: 1;
+        $registros_pagina = 5;
+        $items = $query->skip(($page - 1) * $registros_pagina)->take($registros_pagina)->toArray();
+        $recompensado = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $query->count(),
+            $registros_pagina,
+            $page,
+            [
+                'path' => Paginator::resolveCurrentPath(),
+                'pageName' => 'page',
+            ]
+        );
         return view('recompensado.rewarded', compact('recompensado'));
     }
 
     public function searchRewardedTrash(Request $request)
     {
         $filtro = $request->input('search');
-        $recompensado = RecompensadoModel::raw(function ($collection) use ($filtro) {
+        $query = RecompensadoModel::raw(function ($collection) use ($filtro) {
             return $collection->aggregate([
                 [
                     '$addFields' => [
@@ -177,12 +314,18 @@ class RecompensadoController extends Controller
                     ]
                 ],
                 [
+                    '$unwind' => '$hunters'
+                ],
+                [
                     '$lookup' => [
                         'from' => 'recompensas',
                         'localField' => 'recompensa_id',
                         'foreignField' => '_id',
                         'as' => 'recompensas'
                     ]
+                ],
+                [
+                    '$unwind' => '$recompensas'
                 ],
                 [
                     '$match' => [
@@ -207,6 +350,19 @@ class RecompensadoController extends Controller
                 ],
             ]);
         });
+        $page = Paginator::resolveCurrentPage() ?: 1;
+        $registros_pagina = 5;
+        $items = $query->skip(($page - 1) * $registros_pagina)->take($registros_pagina)->toArray();
+        $recompensado = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $query->count(),
+            $registros_pagina,
+            $page,
+            [
+                'path' => Paginator::resolveCurrentPath(),
+                'pageName' => 'page',
+            ]
+        );
         return view('recompensado.trash', compact('recompensado'));
     }
 }
